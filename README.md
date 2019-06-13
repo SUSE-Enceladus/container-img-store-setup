@@ -10,7 +10,8 @@ images for SUSE Linux Enterprise the slow start up time of docker upon
 instance creation provides a sub optimal user experience. Additionally other
 services that depend on docker being operational may time out.
 
-The script and systemd unit file in this project address the problem described
+The script and systemd unit files in this project address the problem described
 above. The script creates a 100 GB device file that is then formatted with
-btrfs. The mounted device allows docker to use the btrfs storage driver and
-the start up process is very fast.
+btrfs by default or xfs. The mounted device allows docker to use the btrfs
+storage driver or for newer versions of docker overlayfs. This improves the
+the startup speed.
