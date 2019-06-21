@@ -1,11 +1,20 @@
 #!/bin/bash
-if [ -e /var/lib/docker-storage.btrfs ]
+fs_type="btrfs"
+fs_creator=mkfs.btrfs
+
+if [ "$1" = "xfs" ]
+then
+fs_type="xfs"
+fs_creator=mkfs.xfs
+fi
+
+if [ -e /var/lib/docker-storage.btrfs ] || [ -e /var/lib/docker-storage.xfs ]
 then
   exit
 fi
 
 mkdir -p /var/lib/docker
-qemu-img create /var/lib/docker-storage.btrfs 100g
-mkfs.btrfs /var/lib/docker-storage.btrfs
-echo "/var/lib/docker-storage.btrfs /var/lib/docker btrfs defaults 0 0" >> /etc/fstab
+qemu-img create "/var/lib/docker-storage.$fs_type" 100g
+$fs_creator "/var/lib/docker-storage.$fs_type"
+echo "/var/lib/docker-storage.$fs_type /var/lib/docker $fs_type defaults 0 0" >> /etc/fstab
 mount /var/lib/docker

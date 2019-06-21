@@ -17,16 +17,17 @@
 
 
 Name:           docker-img-store-setup
-Version:        1.0.0
+Version:        1.0.1
 Release:        0
-Summary:        Setup btrfs image store for docker
+Summary:        Setup btrfs or xfs image store for docker
 License:        GPL-3.0+
 Group:          System/Management
 Url:            https://github.com/SUSE/Enceladus
 Source0:        %{name}-%{version}.tar.bz2
 Requires:       btrfsprogs
 Requires:       qemu-tools
-BuildRequires:  systemd
+Requires:       xfsprogs
+BuildRequires:  pkgconfig(systemd)
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
 BuildArch:      noarch
 
@@ -43,21 +44,26 @@ make install DESTDIR=%{buildroot}
 
 %pre
 %service_add_pre docker-img-store-setup.service
+%service_add_pre docker-img-store-setup-xfs.service
 
 %post
 %service_add_post docker-img-store-setup.service
+%service_add_post docker-img-store-setup-xfs.service
 
 %preun
 %service_del_preun docker-img-store-setup.service
+%service_del_preun docker-img-store-setup-xfs.service
 
 %postun
 %service_del_postun docker-img-store-setup.service
+%service_del_postun docker-img-store-setup-xfs.service
 
 %files
 %defattr(-,root,root,-)
 %doc LICENSE README.md
 %{_sbindir}/docker-img-store-setup
 %{_unitdir}/docker-img-store-setup.service
+%{_unitdir}/docker-img-store-setup-xfs.service
 
 %changelog
 
